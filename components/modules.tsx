@@ -1,4 +1,4 @@
-import { CheckIcon, Circle } from "lucide-react";
+import { ArrowRight, BookMarkedIcon, BookTextIcon, CheckIcon, Videotape } from "lucide-react";
 
 const modules = [
     "Module 1: Introduction to product thinking",
@@ -7,9 +7,24 @@ const modules = [
 ];
 
 const resources = [
-    { title: "Stakeholder Presentation", meta: "PDF • 2.4MB", action: "Download" },
-    { title: "Lecture: Presentation to Executives", meta: "Video • 24 mins", action: "Watch" },
-    { title: "Reading: Storytelling with Data", meta: "Article • 12 min read", action: "Read" },
+    { 
+        icon: BookTextIcon,
+        title: "Stakeholder Presentation",
+        meta: "PDF • 2.4MB", 
+        action: "Download", 
+    },
+    { 
+        icon: Videotape,
+        title: "Lecture: Presentation to Executives", 
+        meta: "Video • 24 mins", 
+        action: "Watch" 
+    },
+    { 
+        icon: BookMarkedIcon,
+        title: "Reading: Storytelling with Data", 
+        meta: "Article • 12 min read", 
+        action: "Read" 
+    },
 ];
 
 const sessions = [
@@ -32,9 +47,9 @@ export default function Modules() {
         <div className="mt-10">
             <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
                 {/* Left panel */}
-                <div className="rounded-2xl border border-[#1F8A8A] bg-white py-4 shadow-sm h-fit">
+                <div className="rounded-2xl border border-[#1F8A8A] py-4 bg-white shadow-sm h-fit">
                     <h2 className="pb-4 border-b border-[#1F8A8A] px-5 text-lg font-semibold flex items-center gap-2 text-gray-800">
-                        <Circle size={15} className="fill-[#112920]" />
+                        <div className="p-1.5 me-1 rounded-full bg-[#112920]" />
                         Modules
                     </h2>
 
@@ -46,7 +61,7 @@ export default function Modules() {
                         return (
                             <div
                             key={item}
-                            className={`flex items-center justify-between border-b px-5 py-3 ${
+                            className={`flex items-center justify-between border px-5 py-3 ${
                                 active
                                 ? "border-emerald-300 bg-[#B4E0CF]"
                                 : "border-gray-200 bg-white"
@@ -83,62 +98,72 @@ export default function Modules() {
 
                 {/* Right panel */}
                 <div className="space-y-6">
-                {/* Resources */}
-                <div className="rounded-2xl border border-[#1F8A8A] bg-white p-4 shadow-sm">
-                    <h2 className="mb-4 text-lg font-semibold text-gray-800">
-                    Current Lesson Resources
-                    </h2>
+                    {/* Resources */}
+                    <div className="rounded-2xl border border-[#1F8A8A] bg-white shadow-sm">
+                        <h2 className="py-4 border-b border-[#1F8A8A] px-5 text-lg font-semibold flex items-center gap-2 text-gray-800">
+                            <div className="p-1.5 me-1 rounded-full bg-[#E9BD55]" />
+                            Current Lesson Resources
+                        </h2>
 
-                    <div className="space-y-3">
-                    {resources.map((item) => (
-                        <div
-                        key={item.title}
-                        className="flex items-center justify-between rounded-xl bg-gray-50 p-3"
-                        >
                         <div>
-                            <p className="text-sm font-medium text-gray-800">{item.title}</p>
-                            <p className="text-xs text-gray-500">{item.meta}</p>
+                        {resources.map((item) => (
+                            <div
+                            key={item.title}
+                            className="flex items-center justify-between rounded-xl border border-gray-300 bg-[#f2efe7] py-3 px-5 my-4 mx-5"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <item.icon size={18} className="text-[#112920]" />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-800">{item.title}</p>
+                                        <p className="text-xs text-emerald-700">{item.meta}</p>
+                                    </div>
+                                </div>
+                                <button className="text-sm text-emerald-700 hover:underline cursor-pointer">
+                                    {item.action}
+                                </button>
+                            </div>
+                        ))}
                         </div>
-                        <button className="text-sm text-emerald-700 hover:underline">
-                            {item.action}
-                        </button>
-                        </div>
-                    ))}
-                    </div>
-                </div>
-
-                {/* Sessions */}
-                <div className="rounded-2xl border border-[#1F8A8A] bg-white p-4 shadow-sm">
-                    <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-gray-800">Live sessions</h2>
-                    <button className="text-sm text-emerald-700 hover:underline">
-                        View schedule
-                    </button>
                     </div>
 
-                    <div className="space-y-3">
-                    {sessions.map((item) => (
-                        <div
-                        key={item.title}
-                        className={`rounded-2xl p-4 ${
-                            item.active ? "bg-emerald-100" : "bg-amber-50"
-                        }`}
-                        >
-                        <p className="text-xs text-gray-600">{item.time}</p>
-                        <h3 className="mt-1 text-base font-semibold text-gray-800">
-                            {item.title}
-                        </h3>
-                        <p className="text-sm text-gray-600">{item.meta}</p>
-
-                        {item.active && (
-                            <button className="mt-4 rounded-lg bg-emerald-900 px-4 py-2 text-sm text-white">
-                            Join session
+                    {/* Sessions */}
+                    <div className="rounded-2xl border border-[#1F8A8A] bg-white shadow-sm">
+                        <div className="py-4 border-b border-[#1F8A8A] px-5 text-lg font-semibold flex items-center justify-between gap-2 text-gray-800">
+                            <div className="flex items-center gap-3">
+                                <div className="p-1.5 rounded-full bg-emerald-600" />
+                                <h2>Live sessions</h2>
+                            </div>
+                            <button className="text-sm flex items-center gap-1 font-light text-emerald-700 hover:underline cursor-pointer">
+                                View schedule <ArrowRight size={16} />
                             </button>
-                        )}
                         </div>
-                    ))}
+
+                        <div className="p-4">
+                            <div className="space-y-3">
+                            {sessions.map((item) => (
+                                <div
+                                key={item.title}
+                                className={`rounded-2xl p-4 ${
+                                    item.active ? "bg-emerald-100 border border-gray-300 space-y-1.5" : "bg-amber-50 border border-gray-300 space-y-1.5   "
+                                }`}
+                                >
+                                    <p className="text-md text-emerald-700">{item.time}</p>
+                                    <h3 className="mt-1 text-lg font-semibold text-gray-800">
+                                        {item.title}
+                                    </h3>
+                                    <p className="text-sm text-emerald-600">{item.meta}</p>
+
+                                    {item.active && (
+                                        <button className="mt-4 rounded-lg bg-emerald-900 px-4 py-2 text-sm text-white hover:scale-105 cursor-pointer transition-all duration-300">
+                                        Join session
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                            </div>
+                        </div>
+
                     </div>
-                </div>
                 </div>
             </div>
         </div>
