@@ -2,8 +2,17 @@ import { ArrowRight, BookMarkedIcon, BookTextIcon, CheckIcon, Videotape } from "
 
 const modules = [
     "Module 1: Introduction to product thinking",
-    "Module 2: Introduction to product thinking",
-    "Module 3: Introduction to product thinking",
+    "Module 2: Market Research Methods",
+    "Module 3: Defining User Needs",
+    "Module 4: Competitive Analysis",
+    "Module 5: Lessons & Brainstorming",
+    "Module 6: Prototyping Basics",
+    "Module 7: User Testing Fundamentals",
+    "Module 8: Metrics & KPIs",
+    "Module 9: Go to Market Strategy",
+    "Module 10: Product Roadmap Planning",
+    "Module 11: Stakeholders Presentation",
+    "Module 12: Final Capstone Project",
 ];
 
 const resources = [
@@ -29,13 +38,13 @@ const resources = [
 
 const sessions = [
     {
-        time: "Today • 4:00 PM WAT",
+        time: "Today - 4:00 PM WAT",
         title: "Module 11 Office Hours",
         meta: "Dr. Femi Adeboye • Zoom • 45mins",
         active: true,
     },
     {
-        time: "Mar 25 • 3:00 PM WAT",
+        time: "Mar 25 - 3:00 PM WAT",
         title: "Capstone Project Kickoff",
         meta: "Full cohort • Zoom • 90mins",
         active: false,
@@ -55,8 +64,8 @@ export default function Modules() {
 
                     <div>
                         {modules.map((item, index) => {
-                        const active = index === 1;
-                        const locked = index === 2;
+                        const active = index === 10;
+                        const locked = index === 11;
 
                         return (
                             <div
@@ -68,12 +77,24 @@ export default function Modules() {
                             }`}
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="rounded-full bg-[#E6F6F6] p-1 w-fit">
-                                        <CheckIcon size={18} className="text-[#112920]" />
+                                    <div className={`rounded-full text-[#112920] w-10 h-10 flex items-center justify-center p-2 ${
+                                        active
+                                        ? "bg-[#1E4A39] text-white"
+                                        : locked
+                                        ? "bg-[#D2ECE3] text-[#112920]"
+                                        : "bg-[#E6F6F6]"
+                                    }`}>
+                                        {
+                                            active
+                                            ? <p>{index + 1}</p>
+                                            : locked
+                                            ? <p>{index + 1}</p>
+                                            : <CheckIcon size={18} className="text-[#112920]" />
+                                        }
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-black">{item}</p>
-                                        <p className="text-xs text-gray-700">
+                                        <p className={`text-sm font-medium ${locked ? "text-[#A6C3B3]" : "text-gray-800"}`}>{item}</p>
+                                        <p className={`text-xs ${locked ? "text-[#96D3BC]" : "text-gray-700"}`}>
                                             {locked ? "Locked" : index < 10 ? "Completed" : "In progress"}
                                         </p>
                                     </div>
@@ -82,9 +103,9 @@ export default function Modules() {
                                 <span
                                     className={`rounded-md px-3 py-1 text-xs font-medium ${
                                     locked
-                                        ? "bg-gray-100 text-gray-500"
+                                        ? "bg-[#B4E0CF] text-[#D2ECE3]"
                                         : active
-                                        ? "bg-amber-100 text-amber-700"
+                                        ? "bg-[#E9BD55] text-amber-900"
                                         : "bg-emerald-100 text-emerald-700"
                                     }`}
                                 >
@@ -113,7 +134,7 @@ export default function Modules() {
                             >
                                 <div className="flex items-center gap-3">
                                     <item.icon size={18} className="text-[#112920]" />
-                                    <div>
+                                    <div className="space-y-0.5">
                                         <p className="text-sm font-medium text-gray-800">{item.title}</p>
                                         <p className="text-xs text-emerald-700">{item.meta}</p>
                                     </div>
@@ -154,7 +175,7 @@ export default function Modules() {
                                     <p className="text-sm text-emerald-600">{item.meta}</p>
 
                                     {item.active && (
-                                        <button className="mt-4 rounded-lg bg-emerald-900 px-4 py-2 text-sm text-white hover:scale-105 cursor-pointer transition-all duration-300">
+                                        <button className="mt-4 rounded-lg bg-emerald-900 px-4 py-2 text-sm text-white hover:scale-105 cursor-pointer transition-all duration-200">
                                         Join session
                                         </button>
                                     )}

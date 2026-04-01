@@ -3,15 +3,19 @@
 import SideBar from "@/components/sidebar";
 import Modules from "@/components/modules";
 import { ArrowUpRight } from "lucide-react";
+import Navbar from "@/components/navbar";
 
 const course_details = [
     {
         title: "Product Design",
-        progress: "80%",
+        course: "Introduction to UI/UX design",
+        total_modules: "12",
+        total_time: "20",
         modules: "10",
         remaining: "2",
         time: "18",
         grade: "A",
+        progress: "80%",
     },
 ];
 
@@ -19,9 +23,13 @@ export default function Learning(){
     return(
         <div>
             <main className="w-fill flex">
-                <SideBar/>
-                <section className="w-full min-h-screen bg-white p-15">
-                    <div>
+            {/* sidebar */}
+            <SideBar/>
+                <section className="w-full min-h-screen bg-white">
+                    {/* navbar */}
+                    <Navbar/>
+                    <div className="px-15 mx-auto max-w-6xl py-8">
+
                         {/* course details card */}
                         {course_details.map((detail) => (
                             <div className="bg-[#112920] p-5 rounded-lg" key={detail.title}>
@@ -36,9 +44,9 @@ export default function Learning(){
                                         </a>
                                         <p className="text-xl font-semibold pt-2">{detail.title}</p>
                                         <div className=" flex items-center space-x-3 pt-2 text-xs text-[#E9BD55]/90">
-                                            <p>12 modules</p>
-                                            <p>Introduction to UI/UX design</p>
-                                            <p>20hr</p>
+                                            <p>{detail.total_modules} modules</p>
+                                            <p>{detail.course}</p>
+                                            <p>{detail.total_time}hr</p>
                                         </div>
                                         <div className="pt-6 text-xl font-semibold">
                                             <p>{detail.progress}</p>
