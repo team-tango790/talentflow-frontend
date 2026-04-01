@@ -2,7 +2,7 @@ import { Search, User, Bell } from "lucide-react";
 
 export default function Navbar() {
     return (
-        <div className="w-full sticky top-0 z-50 border-b shadow-lg bg-[#f5f2ec] py-3">
+        <div className="w-full sticky top-0 z-50 border-b shadow-lg bg-white py-3">
             <div className="mx-auto px-15 flex max-w-6xl items-center justify-between">
                 
                 {/* Search Bar */}
