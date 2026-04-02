@@ -82,7 +82,7 @@ export default function Modules() {
                                         active
                                         ? "bg-[#C97A1A] text-white"
                                         : locked
-                                        ? "bg-[#D2ECE3] text-[#112920]"
+                                        ? "bg-gray-400 text-white"
                                         : "bg-[#E6F6F6]"
                                     }`}>
                                         {
@@ -94,8 +94,8 @@ export default function Modules() {
                                         }
                                     </div>
                                     <div>
-                                        <p className={`text-sm font-medium ${locked ? "text-[#A6C3B3]" : active ? "text-[#C97A1A]" : "text-gray-800"}`}>{item}</p>
-                                        <p className={`text-xs ${locked ? "text-[#96D3BC]" : active ? "text-[#C97A1A]" : "text-gray-700"}`}>
+                                        <p className={`text-sm font-medium ${locked ? "text-gray-400" : active ? "text-[#C97A1A]" : "text-gray-800"}`}>{item}</p>
+                                        <p className={`text-xs ${locked ? "text-gray-400" : active ? "text-[#C97A1A]" : "text-gray-700"}`}>
                                             {locked ? "Locked" : index < 10 ? "Completed" : "In progress"}
                                         </p>
                                     </div>
@@ -104,7 +104,7 @@ export default function Modules() {
                                 <span
                                     className={`rounded-lg px-3 py-1 text-xs font-medium ${
                                     locked
-                                        ? "bg-[#B4E0CF] text-[#D2ECE3]"
+                                        ? "bg-gray-400 text-white"
                                         : active
                                         ? "bg-[#F8E9C7] text-[#C97A1A]"
                                         : "bg-emerald-100 text-emerald-700"
