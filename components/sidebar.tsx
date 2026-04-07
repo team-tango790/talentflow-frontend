@@ -9,8 +9,7 @@ const navSections = [
     label: "Learn",
     items: [
       { icon: "fa-solid fa-house", label: "Dashboard", href: "/dashboard" },
-      { icon: "fa-brands fa-youtube", label: "My Courses", href: "/courses" },
-      { icon: "fa-solid fa-fire", label: "Learning Path", href: "/learning-path" },
+      { icon: "fa-brands fa-youtube", label: "Course 0verview", href: "/course_overview" },
       { icon: "fa-solid fa-book-open", label: "Assignments", href: "/assignments" },
       { icon: "fa-regular fa-comments", label: "Discussions", href: "/discussions" },
     ],
