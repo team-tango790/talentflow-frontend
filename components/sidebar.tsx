@@ -1,124 +1,295 @@
 "use client";
-
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const navSections = [
+const NAV_SECTIONS = [
   {
-    label: "Learn",
+    section: "Learn",
     items: [
-      { icon: "fa-solid fa-house", label: "Dashboard", href: "/dashboard" },
-      { icon: "fa-brands fa-youtube", label: "My Courses", href: "/courses" },
-      { icon: "fa-solid fa-fire", label: "Learning Path", href: "/learning-path" },
-      { icon: "fa-solid fa-book-open", label: "Assignments", href: "/assignments" },
-      { icon: "fa-regular fa-comments", label: "Discussions", href: "/discussions" },
+      { label: "Dashboard",     href: "/dashboard",      icon: "house"         },
+      { label: "Course Overview",    href: "/courses",        icon: "courses"       },
+      // { label: "Learning path", href: "/learning-path",  icon: "path"          },
+      { label: "Assignments",   href: "/assignments",    icon: "assignments"   },
+      { label: "Discussions",   href: "/discussions",    icon: "discussions"   },
     ],
   },
   {
-    label: "Progress",
+    section: "Progress",
     items: [
-      { icon: "fa-solid fa-chart-line", label: "Analytics", href: "/analytics" },
-      { icon: "fa-solid fa-certificate", label: "Certificates", href: "/certificates" },
+      { label: "Analytics",    href: "/analytics",    icon: "analytics"    },
+      { label: "Certificates", href: "/certificates", icon: "certificates" },
     ],
   },
   {
-    label: "Account",
+    section: "Account",
     items: [
-      { icon: "fa-solid fa-gear", label: "Settings", href: "/settings" },
+      { label: "Settings", href: "/settings", icon: "settings" },
     ],
   },
 ];
 
-export default function SideBar() {
+function Icon({ name }: { name: string }) {
+  const props = {
+    width: 16, height: 16,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.8",
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
+
+  switch (name) {
+    case "house":
+      return (
+        <svg {...props}>
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      );
+    case "courses":
+      return (
+        <svg {...props}>
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+      );
+    case "path":
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      );
+    case "assignments":
+      return (
+        <svg {...props}>
+          <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+        </svg>
+      );
+    case "discussions":
+      return (
+        <svg {...props}>
+          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+        </svg>
+      );
+    case "analytics":
+      return (
+        <svg {...props}>
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+        </svg>
+      );
+    case "certificates":
+      return (
+        <svg {...props}>
+          <rect x="3" y="4" width="18" height="14" rx="2" />
+          <line x1="7" y1="9" x2="17" y2="9" />
+          <line x1="7" y1="13" x2="13" y2="13" />
+        </svg>
+      );
+    case "settings":
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
+export default function Sidebar() {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <button
-        className="fixed top-4 left-4 z-50 md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-[#112920] text-[#E9BD55] shadow-lg border border-[#1e3d2f]"
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Toggle sidebar"
-      >
-        <i className={`fa-solid ${isOpen ? "fa-xmark" : "fa-bars"} text-sm`}></i>
-      </button>
-
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden backdrop-blur-sm"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      <style>{`
+        .sidebar-nav-link {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 9px 12px;
+          border-radius: 9px;
+          text-decoration: none;
+          font-size: 14px;
+          color: rgba(255,255,255,0.55);
+          font-weight: 400;
+          background: transparent;
+          transition: background 0.15s, color 0.15s;
+          white-space: nowrap;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .sidebar-nav-link:hover {
+          background: rgba(255,255,255,0.07);
+          color: white;
+        }
+        .sidebar-nav-link.active {
+          background: rgba(255,255,255,0.10);
+          color: white;
+          font-weight: 600;
+        }
+        .sidebar-inner-nav::-webkit-scrollbar { width: 0; }
+        .sidebar-inner-nav { scrollbar-width: none; }
+      `}</style>
 
       <aside
-        className={`
-          fixed top-0 left-0 z-40 h-screen
-          w-[260px] bg-[#112920]
-          flex flex-col
-          border-r border-[#1a3328]
-          shadow-[4px_0_30px_rgba(0,0,0,0.4)]
-          transition-transform duration-300 ease-in-out
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0 md:static md:z-auto md:h-auto md:min-h-screen
-        `}
+        style={{
+          width: 248,
+          minWidth: 248,
+          maxWidth: 248,
+          height: "100vh",
+          position: "sticky",
+          top: 0,
+          background: "#112920",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",        /* ← no outer overflow */
+          flexShrink: 0,
+          zIndex: 40,
+        }}
       >
-        <div className="px-6 py-6 border-b border-[#1e3d2f]">
-            <h1 className="text-[#F3F7F5] text-xl font-bold text-center tracking-tight">
-              Talent<span className="text-[#E9BD55]">Flow</span>
-            </h1>
+        {/* ── Logo ── */}
+        <div
+          style={{
+            padding: "20px 24px 18px",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+            flexShrink: 0,
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "'Playfair Display', serif",
+              fontSize: 18,
+              fontWeight: 700,
+              color: "white",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Talent<span style={{ color: "#E9BD55" }}>Flow</span>
+          </span>
         </div>
 
-      
-        <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-6 scrollbar-thin">
-          {navSections.map((section) => (
-            <div key={section.label}>
-              <p className="text-[#F1F9F6] text-[10px] font-semibold tracking-[0.15em] uppercase mb-2 px-3">
-                {section.label}
+        {/* ── Scrollable nav ── */}
+        <nav
+          className="sidebar-inner-nav"
+          style={{
+            flex: 1,
+            overflowY: "auto",
+            padding: "16px 12px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 24,
+          }}
+        >
+          {NAV_SECTIONS.map(({ section, items }) => (
+            <div key={section}>
+              <p
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  color: "rgba(255,255,255,0.3)",
+                  letterSpacing: "0.10em",
+                  textTransform: "uppercase",
+                  padding: "0 12px",
+                  marginBottom: 4,
+                  fontFamily: "'DM Sans', sans-serif",
+                }}
+              >
+                {section}
               </p>
-              <ul className="space-y-1">
-                {section.items.map((item) => {
-                  const isActive = pathname === item.href;
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                {items.map(({ label, href, icon }) => {
+                  const active = pathname === href || pathname.startsWith(href + "/");
                   return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        onClick={() => setIsOpen(false)}
-                        className={`
-                          group flex items-center gap-3 px-3 py-2.5 rounded-xl
-                          text-sm font-medium transition-all duration-200 text-[#F1F9F6]
-                          ${
-                            isActive
-                              ? "bg-[#E9BD55] text-[#0d2218] shadow-[0_0_16px_rgba(233,189,85,0.25)]"
-                              : "text-[#8ab5a0] hover:bg-[#1a3328] hover:text-[#F3F7F5]"
-                          }
-                        `}
-                      >
+                    <Link
+                      key={href}
+                      href={href}
+                      className={`sidebar-nav-link${active ? " active" : ""}`}
+                    >
+                      <span style={{ flexShrink: 0, opacity: active ? 1 : 0.65 }}>
+                        <Icon name={icon} />
+                      </span>
+                      {label}
+                      {active && (
                         <span
-                          className={`
-                            w-7 h-7 rounded-lg flex items-center justify-center text-xs flex-shrink-0
-                            transition-all duration-200
-                            ${
-                              isActive
-                                ? "bg-[#c99d3a]/30 text-[#0d2218]"
-                                : "bg-[#1e3d2f] text-[#6aa085] group-hover:bg-[#243d32] group-hover:text-[#E9BD55]"
-                            }
-                          `}
-                        >
-                          <i className={item.icon}></i>
-                        </span>
-                        {item.label}
-                        {isActive && (
-                          <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#0d2218]/50" />
-                        )}
-                      </Link>
-                    </li>
+                          style={{
+                            marginLeft: "auto",
+                            width: 5,
+                            height: 5,
+                            borderRadius: "50%",
+                            background: "#E9BD55",
+                            flexShrink: 0,
+                          }}
+                        />
+                      )}
+                    </Link>
                   );
                 })}
-              </ul>
+              </div>
             </div>
           ))}
         </nav>
+
+        {/* ── User card (pinned bottom) ── */}
+        <div
+          style={{
+            padding: "12px 16px",
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+            flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <div
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: "50%",
+              background: "#E9BD55",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 13,
+              fontWeight: 700,
+              color: "#112920",
+              flexShrink: 0,
+            }}
+          >
+            A
+          </div>
+          <div style={{ overflow: "hidden", minWidth: 0 }}>
+            <p
+              style={{
+                fontSize: 13,
+                fontWeight: 600,
+                color: "white",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                fontFamily: "'DM Sans', sans-serif",
+              }}
+            >
+              Aisha
+            </p>
+            <p
+              style={{
+                fontSize: 11,
+                color: "rgba(255,255,255,0.4)",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                fontFamily: "'DM Sans', sans-serif",
+              }}
+            >
+              UI/UX Learner
+            </p>
+          </div>
+        </div>
       </aside>
     </>
   );
