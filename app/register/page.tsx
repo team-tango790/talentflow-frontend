@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const BASE_URL = "https://talentflow-backend-production.up.railway.app";
+const BASE_URL = "https://talentflow-backend-7pp4.onrender.com";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
