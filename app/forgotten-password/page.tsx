@@ -2,8 +2,7 @@
 import Link from "next/link";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-
-const BASE_URL = "https://talentflow-backend-production.up.railway.app";
+import { BASE_URL } from "@/lib/api";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -60,19 +59,19 @@ async function fetchWithTimeout(
 
 export default function RecoverPassword() {
   const [stage, setStage] = useState<1 | 2 | 3>(1);
-  const [email, setEmail]                     = useState("");
-  const [otp, setOtp]                         = useState<string[]>(Array(6).fill(""));
-  const [newPassword, setNewPassword]         = useState("");
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
+  const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showNew, setShowNew]                 = useState(false);
-  const [showConfirm, setShowConfirm]         = useState(false);
-  const [loading, setLoading]                 = useState(false);
-  const [fieldErrors, setFieldErrors]         = useState<FieldErrors>({});
-  const [globalError, setGlobalError]         = useState<string | null>(null);
-  const [successMessage, setSuccessMessage]   = useState<string | null>(null);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [globalError, setGlobalError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
-  const router  = useRouter();
+  const router = useRouter();
 
   // ── OTP input handlers ───────────────────────────────────────────────────
 
@@ -457,7 +456,7 @@ export default function RecoverPassword() {
             </p>
           </div>
 
-          {globalError    && <div className="global-error"  role="alert">{globalError}</div>}
+          {globalError && <div className="global-error" role="alert">{globalError}</div>}
           {successMessage && <div className="global-success" role="status">{successMessage}</div>}
 
           <form onSubmit={handleSendRecoveryEmail} noValidate className="animate-in animate-d1" style={{ marginBottom: 24 }}>
@@ -514,7 +513,7 @@ export default function RecoverPassword() {
             </p>
           </div>
 
-          {globalError    && <div className="global-error"  role="alert">{globalError}</div>}
+          {globalError && <div className="global-error" role="alert">{globalError}</div>}
           {successMessage && <div className="global-success" role="status">{successMessage}</div>}
 
           <form onSubmit={handleVerifyOtp} noValidate className="animate-in animate-d1">
@@ -581,7 +580,7 @@ export default function RecoverPassword() {
             </p>
           </div>
 
-          {globalError    && <div className="global-error"  role="alert">{globalError}</div>}
+          {globalError && <div className="global-error" role="alert">{globalError}</div>}
           {successMessage && <div className="global-success" role="status">{successMessage}</div>}
 
           <form onSubmit={handleResetPassword} noValidate className="animate-in animate-d1" style={{ display: "flex", flexDirection: "column", gap: 18 }}>
