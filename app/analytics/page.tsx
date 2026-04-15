@@ -171,7 +171,8 @@ export default function Analytics() {
                 getMyModulePerformance(),
             ]);
             setSnapshot(snapRes?.data ?? snapRes ?? {});
-            setModulePerf(modRes?.data ?? []);
+            const rawModPerf = modRes?.data ?? modRes ?? [];
+            setModulePerf(Array.isArray(rawModPerf) ? rawModPerf : []);
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : "Failed to load analytics");
         } finally {
@@ -205,6 +206,7 @@ export default function Analytics() {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .period-btn { padding: 8px 18px; border-radius: 20px; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
         .period-btn.active { background: #112920; color: white; }
         .period-btn:not(.active) { background: white; color: #7a9a91; border: 1px solid #e0e8e4; }
