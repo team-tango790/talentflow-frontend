@@ -5,13 +5,6 @@ import { useRouter } from "next/navigation";
 import { BASE_URL } from "@/lib/api";
 
 interface LoginPayload { email: string; password: string; }
-interface AuthSuccessResponse {
-  success?: boolean;
-  token: string;
-  data?: { id: string; name: string; email: string; role?: string; track?: string; internId?: string;[key: string]: unknown };
-  user?: { id: string; name: string; email: string; role?: string; track?: string;[key: string]: unknown };
-  message?: string;
-}
 interface LoginErrorResponse { message?: string; error?: string; msg?: string; }
 interface FieldErrors { email?: string; password?: string; }
 
@@ -32,7 +25,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [globalError, setGlobalError] = useState<string | null>(null);
   const router = useRouter();
@@ -60,10 +52,10 @@ export default function Login() {
       });
       if (response.ok) {
         const res = await safeJson<{ success: boolean; data: Record<string, unknown> }>(response);
-        const payload = res?.data ?? {};
-        const token = payload.token as string | undefined;
+        const data = res?.data ?? {};
+        const token = data.token as string | undefined;
         if (token) {
-          const { token: _t, ...user } = payload;
+          const { token: _t, ...user } = data;
           void _t;
           saveAuthData(token, user);
         }
@@ -84,56 +76,6 @@ export default function Login() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    setGlobalError(null);
-    setGoogleLoading(true);
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (!clientId) {
-      setGlobalError("Google login is not configured. Please contact support.");
-      setGoogleLoading(false);
-      return;
-    }
-    const google = (window as any).google;
-    if (!google) {
-      setGlobalError("Google SDK failed to load. Please refresh and try again.");
-      setGoogleLoading(false);
-      return;
-    }
-    google.accounts.id.initialize({
-      client_id: clientId,
-      callback: async (googleResponse: { credential: string }) => {
-        try {
-          const res = await fetch(`${BASE_URL}/api/auth/google-auth`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: googleResponse.credential }),
-          });
-          if (res.ok) {
-            const data = await safeJson<AuthSuccessResponse>(res);
-            if (data?.token) {
-              const user = data.data ?? data.user ?? {};
-              saveAuthData(data.token, user as Record<string, unknown>);
-            }
-            router.push("/dashboard");
-            return;
-          }
-          const errorData = await safeJson<LoginErrorResponse>(res);
-          const serverMsg = errorData?.message ?? errorData?.error ?? errorData?.msg;
-          if (res.status === 403) setGlobalError("This Google account is not authorised. Please contact support.");
-          else if (res.status >= 500) setGlobalError("Server error. Please try again in a moment.");
-          else setGlobalError(serverMsg ?? "Google sign-in failed. Please try again.");
-        } catch (err: unknown) {
-          setGlobalError(err instanceof Error ? err.message : "Network error. Please try again.");
-        } finally {
-          setGoogleLoading(false);
-        }
-      },
-    });
-    google.accounts.id.prompt((notification: any) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) setGoogleLoading(false);
-    });
-  };
-
   return (
     <div className="flex w-full min-h-screen">
       <style>{`
@@ -144,7 +86,6 @@ export default function Login() {
         .gold-line { width: 48px; height: 3px; background: #E9BD55; border-radius: 2px; margin-bottom: 24px; }
         .stat-card { background: rgba(233,189,85,0.08); border: 1px solid rgba(233,189,85,0.2); border-radius: 12px; padding: 16px 24px; display: flex; flex-direction: column; gap: 2px; transition: background 0.3s; }
         .stat-card:hover { background: rgba(233,189,85,0.14); }
-        .tf-input-wrap { position: relative; width: 100%; }
         .tf-input { width: 100%; height: 50px; border: 1.5px solid #dce6e2; border-radius: 10px; padding: 0 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #112920; background: #f9fbfa; outline: none; transition: border-color 0.2s, background 0.2s, box-shadow 0.2s; }
         .tf-input:focus { border-color: #112920; background: white; box-shadow: 0 0 0 4px rgba(17,41,32,0.07); }
         .tf-input::placeholder { color: #a0b4ae; font-size: 13px; }
@@ -161,14 +102,6 @@ export default function Login() {
         .btn-primary:not(:disabled):hover::after { opacity: 1; }
         .btn-primary:not(:disabled):active { transform: translateY(0); }
         .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; }
-        .btn-google { width: 100%; height: 50px; border-radius: 12px; background: white; color: #112920; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 15px; border: 1.5px solid #dce6e2; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
-        .btn-google:not(:disabled):hover { border-color: #112920; background: #f3f7f5; box-shadow: 0 2px 12px rgba(17,41,32,0.08); }
-        .btn-google:disabled { opacity: 0.65; cursor: not-allowed; }
-        .spinner { width: 16px; height: 16px; border: 2px solid #dce6e2; border-top-color: #112920; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
-        .divider-line { flex: 1; height: 1px; background: #e8eeec; }
-        .divider-text { font-size: 12px; color: #9ab0aa; font-family: 'DM Sans', sans-serif; }
         .logo-display { font-family: 'Playfair Display', serif; }
         .main-heading { font-family: 'Playfair Display', serif; }
         .global-error { background: #fff2f2; border: 1px solid #fcd0cc; border-radius: 10px; color: #c0392b; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 12px 16px; margin-bottom: 20px; line-height: 1.5; }
@@ -223,7 +156,7 @@ export default function Login() {
               <label className="tf-label" htmlFor="email">Email Address</label>
               <input id="email" className={`tf-input${fieldErrors.email ? " error" : ""}`} type="email" placeholder="you@example.com" value={email}
                 onChange={(e) => { setEmail(e.target.value); if (fieldErrors.email) setFieldErrors(p => ({ ...p, email: undefined })); }}
-                autoComplete="email" disabled={loading || googleLoading} />
+                autoComplete="email" disabled={loading} />
               {fieldErrors.email && <p className="field-error">{fieldErrors.email}</p>}
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
@@ -231,41 +164,25 @@ export default function Login() {
                 <label className="tf-label" htmlFor="password" style={{ marginBottom: 0 }}>Password</label>
                 <Link href="/forgotten-password" className="forgot-link">Forgot password?</Link>
               </div>
-              <div className="tf-input-wrap">
+              <div style={{ position: "relative", width: "100%" }}>
                 <input id="password" className={`tf-input tf-input-password${fieldErrors.password ? " error" : ""}`}
                   type={showPassword ? "text" : "password"} placeholder="Enter your password" value={password}
                   onChange={(e) => { setPassword(e.target.value); if (fieldErrors.password) setFieldErrors(p => ({ ...p, password: undefined })); }}
-                  autoComplete="current-password" disabled={loading || googleLoading} />
+                  autoComplete="current-password" disabled={loading} />
                 <button type="button" className="toggle-pw" onClick={() => setShowPassword(v => !v)} aria-label={showPassword ? "Hide password" : "Show password"} tabIndex={-1}>
-                  <i className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`} />
+                  {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
               {fieldErrors.password && <p className="field-error">{fieldErrors.password}</p>}
             </div>
             <div className="animate-in animate-in-delay-2" style={{ marginTop: 10 }}>
-              <button type="submit" className="btn-primary" disabled={loading || googleLoading}>
+              <button type="submit" className="btn-primary" disabled={loading}>
                 {loading ? "Signing In…" : "Sign In"}
               </button>
-              <p style={{ textAlign: "center", fontSize: 13, color: "#7a9a91", margin: "14px 0" }}>
+              <p style={{ textAlign: "center", fontSize: 13, color: "#7a9a91", marginTop: 16 }}>
                 Don&apos;t have an account?{" "}
                 <Link href="/register" style={{ color: "#E9BD55", fontWeight: 500, textDecoration: "none" }}>Sign up</Link>
               </p>
-              <div className="divider"><div className="divider-line" /><span className="divider-text">or continue with</span><div className="divider-line" /></div>
-              <button type="button" className="btn-google" onClick={handleGoogleLogin} disabled={loading || googleLoading} aria-label="Continue with Google">
-                {googleLoading ? (
-                  <><span className="spinner" />Connecting…</>
-                ) : (
-                  <>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
-                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                    </svg>
-                    Continue with Google
-                  </>
-                )}
-              </button>
             </div>
           </form>
         </div>
