@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# InternTrack - Learning Management Platform
 
-## Getting Started
+![Next.js](https://img.shields.io/badge/Next.js-14+-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 
-First, run the development server:
+**InternTrack** is a modern, responsive web application built for internship and cohort-based learning programs. It helps interns track their progress, view analytics, manage certificates, and update their profiles in a clean and intuitive interface.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **📊 Analytics Dashboard** — Comprehensive progress tracking with study hours chart, module performance, GPA, streaks, and course overview.
+- **🏆 Certificates Management** — View earned certificates with detailed modal, download, and shareable links.
+- **⚙️ User Settings** — Profile editing (name, bio, learning track), account details, and security options.
+- **📱 Fully Responsive Design** — Optimized for desktop, tablet, and mobile with smooth UX.
+- **🎨 Modern UI** — Clean design using custom CSS, DM Sans & Playfair Display fonts, and consistent theming.
+- **🔒 Secure API Integration** — Backend communication with authentication headers and error handling.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠 Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework**: Next.js 14+ (App Router)
+- **Language**: TypeScript
+- **Styling**: Custom CSS + Tailwind-inspired design system
+- **Fonts**: DM Sans (UI) + Playfair Display (Headings)
+- **State Management**: React hooks (`useState`, `useEffect`, `useCallback`)
+- **API**: Custom fetch wrappers with authentication
+- **Other**: LocalStorage for user persistence, SVG icons, Skeleton loaders
 
-## Learn More
+## 🚀 Getting Started
 
-To learn more about Next.js, take a look at the following resources:
+### Prerequisites
+- Node.js 18+
+- npm, yarn, pnpm, or bun
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Installation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/interntrack.git
+   cd interntrack
+2. npm install
+    # or
+    yarn install
+    # or
+    pnpm install
+3. NEXT_PUBLIC_BASE_URL=http://localhost:8000   # or your backend URL
+4. npm run dev
+    # or
+    yarn dev
+    # or
+    pnpm dev
+5. Open http://localhost:3000 in your browser.
 
-## Deploy on Vercel
+app/
+├── Dashboard/  
+├── analytics/          # Analytics dashboard
+├── certificates/       # Certificates page + modal
+├── settings/           # Profile & account settings
+├── components/         # Reusable UI components (Sidebar, etc.)
+lib/
+├── api.ts              # API utilities, headers, fetch wrappers
+components/
+└── sidebar.tsx         # Main navigation sidebar
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run linter
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Contributions, issues, and feature requests are welcome!
+
+Fork the project
+Create your feature branch (git checkout -b feature/amazing-feature)
+Commit your changes (git commit -m 'Add amazing feature')
+Push to the branch (git push origin feature/amazing-feature)
+Open a Pull Request
+
+📄 License
+This project is for educational/internship purposes. All rights reserved.
+
+Built with ❤️ for internship success tracking.
+If you have any questions or need more details about the project (API endpoints, backend integration, etc.), feel free to open an issue or contact the team.

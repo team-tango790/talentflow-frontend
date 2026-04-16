@@ -64,47 +64,94 @@ const StatCard = ({
     color: string;
 }) => (
     <div style={{
-        background: "#fff", borderRadius: 14, padding: "20px 22px",
-        border: "1.5px solid #e8eeec", flex: 1,
-        display: "flex", flexDirection: "column", gap: 10,
+        background: "#fff",
+        borderRadius: 14,
+        padding: "20px 20px",
+        border: "1.5px solid #e8eeec",
+        flex: 1,
+        minWidth: 0,
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
     }}>
-        <div style={{ width: 40, height: 40, borderRadius: 10, background: `${color}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
+        <div style={{
+            width: 42,
+            height: 42,
+            borderRadius: 12,
+            background: `${color}18`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 22,
+            flexShrink: 0
+        }}>
             {icon}
         </div>
         <div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: "#112920", lineHeight: 1 }}>{value}</div>
-            <div style={{ fontSize: 13, color: "#6b7280", marginTop: 4 }}>{label}</div>
-            {sub && <div style={{ fontSize: 11, color: color, marginTop: 4, fontWeight: 500 }}>{sub}</div>}
+            <div style={{ fontSize: 26, fontWeight: 700, color: "#112920", lineHeight: 1.1 }}>{value}</div>
+            <div style={{ fontSize: 13.5, color: "#6b7280", marginTop: 6 }}>{label}</div>
+            {sub && <div style={{ fontSize: 12, color: color, marginTop: 4, fontWeight: 500 }}>{sub}</div>}
         </div>
     </div>
 );
 
 const ProgressBar = ({ value, color = "#112920" }: { value: number; color?: string }) => (
-    <div style={{ background: "#f0f0e8", borderRadius: 4, height: 6, width: "100%", overflow: "hidden" }}>
-        <div style={{ width: `${Math.min(value, 100)}%`, height: "100%", background: color, borderRadius: 4, transition: "width 0.6s ease" }} />
+    <div style={{ background: "#f0f0e8", borderRadius: 6, height: 7, width: "100%", overflow: "hidden" }}>
+        <div
+            style={{
+                width: `${Math.min(value, 100)}%`,
+                height: "100%",
+                background: color,
+                borderRadius: 6,
+                transition: "width 0.6s cubic-bezier(0.4, 0, 0.2, 1)"
+            }}
+        />
     </div>
 );
 
 const Skeleton = ({ h = 16, w = "100%" }: { h?: number; w?: string | number }) => (
-    <div style={{ height: h, width: w, borderRadius: 6, background: "linear-gradient(90deg,#e8e8e0 25%,#d8d8d0 50%,#e8e8e0 75%)", backgroundSize: "400px 100%", animation: "shimmer 1.4s infinite linear" }} />
+    <div style={{
+        height: h,
+        width: w,
+        borderRadius: 6,
+        background: "linear-gradient(90deg,#e8e8e0 25%,#d8d8d0 50%,#e8e8e0 75%)",
+        backgroundSize: "400px 100%",
+        animation: "shimmer 1.4s infinite linear"
+    }} />
 );
 
 /* ════════════════════════════════════
-   STUDY CHART
+   STUDY CHART - Improved Responsiveness
 ════════════════════════════════════ */
 function StudyOvertimeChart({ data }: { data: StudyPoint[] }) {
     if (!data.length) return (
-        <div style={{ height: 200, display: "flex", alignItems: "center", justifyContent: "center", color: "#9ca3af", fontSize: 14 }}>
+        <div style={{
+            height: 220,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#9ca3af",
+            fontSize: 14,
+            textAlign: "center",
+            padding: "0 20px"
+        }}>
             No study data yet. Start learning to see your chart!
         </div>
     );
 
-    const labels = data.map((d) => d.period ?? (d.date ? new Date(d.date).toLocaleDateString("en-US", { weekday: "short" }) : "—"));
+    const labels = data.map((d) =>
+        d.period ?? (d.date ? new Date(d.date).toLocaleDateString("en-US", { weekday: "short" }) : "—")
+    );
     const values = data.map((d) => d.hours ?? d.hoursSpent ?? 0);
     const maxVal = Math.max(...values, 1);
 
-    const W = 560; const H = 200;
-    const padL = 36; const padR = 20; const padT = 16; const padB = 32;
+    // Responsive dimensions
+    const W = 580;
+    const H = 240;
+    const padL = 48;
+    const padR = 24;
+    const padT = 20;
+    const padB = 40;
     const chartW = W - padL - padR;
     const chartH = H - padT - padB;
     const slotW = chartW / labels.length;
@@ -115,42 +162,69 @@ function StudyOvertimeChart({ data }: { data: StudyPoint[] }) {
     const pathD = values.map((v, i) => `${i === 0 ? "M" : "L"}${getX(i)},${getY(v)}`).join(" ");
 
     return (
-        <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
+        <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
+            {/* Horizontal grid lines */}
             {[0, 0.25, 0.5, 0.75, 1].map((frac, i) => {
                 const yPos = padT + chartH * (1 - frac);
                 return (
                     <g key={i}>
-                        <line x1={padL} y1={yPos} x2={W - padR} y2={yPos} stroke="#f0f0e8" strokeWidth="1" />
-                        <text x={padL - 6} y={yPos + 4} textAnchor="end" fontSize="9" fill="#9ca3af">
+                        <line x1={padL} y1={yPos} x2={W - padR} y2={yPos} stroke="#f0f0e8" strokeWidth="1.5" />
+                        <text x={padL - 8} y={yPos + 4} textAnchor="end" fontSize="10" fill="#9ca3af">
                             {(maxVal * frac).toFixed(1)}h
                         </text>
                     </g>
                 );
             })}
-            <path d={pathD} fill="none" stroke="#112920" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+
+            {/* Line */}
+            <path d={pathD} fill="none" stroke="#112920" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
+
             {/* Area fill */}
             <path
                 d={`${pathD} L${getX(values.length - 1)},${padT + chartH} L${getX(0)},${padT + chartH} Z`}
-                fill="url(#areaGrad)" opacity="0.15"
+                fill="url(#areaGrad)"
+                opacity="0.12"
             />
+
             <defs>
                 <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#112920" />
                     <stop offset="100%" stopColor="#112920" stopOpacity="0" />
                 </linearGradient>
             </defs>
+
+            {/* Dots */}
             {values.map((v, i) => (
-                <circle key={i} cx={getX(i)} cy={getY(v)} r="4" fill="#E9BD55" stroke="#fff" strokeWidth="2" />
+                <circle
+                    key={i}
+                    cx={getX(i)}
+                    cy={getY(v)}
+                    r="4.5"
+                    fill="#E9BD55"
+                    stroke="#fff"
+                    strokeWidth="2.5"
+                />
             ))}
+
+            {/* X-axis labels */}
             {labels.map((l, i) => (
-                <text key={i} x={getX(i)} y={H - 4} textAnchor="middle" fontSize="10" fill="#9ca3af">{l}</text>
+                <text
+                    key={i}
+                    x={getX(i)}
+                    y={H - 8}
+                    textAnchor="middle"
+                    fontSize="10.5"
+                    fill="#9ca3af"
+                >
+                    {l}
+                </text>
             ))}
         </svg>
     );
 }
 
 /* ════════════════════════════════════
-   MAIN ANALYTICS PAGE
+   MAIN ANALYTICS PAGE - RESPONSIVE
 ════════════════════════════════════ */
 export default function Analytics() {
     const [snapshot, setSnapshot] = useState<AnalyticsSnapshot | null>(null);
@@ -161,7 +235,6 @@ export default function Analytics() {
     const [chartLoading, setChartLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // ── Load snapshot + module performance ──
     const loadMain = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -180,7 +253,6 @@ export default function Analytics() {
         }
     }, []);
 
-    // ── Load study overtime chart ──
     const loadChart = useCallback(async (p: Period) => {
         setChartLoading(true);
         try {
@@ -203,112 +275,198 @@ export default function Analytics() {
     return (
         <div style={{ display: "flex", minHeight: "100vh", background: "#f5f5f0", fontFamily: "'DM Sans', sans-serif" }}>
             <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .period-btn { padding: 8px 18px; border-radius: 20px; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-        .period-btn.active { background: #112920; color: white; }
-        .period-btn:not(.active) { background: white; color: #7a9a91; border: 1px solid #e0e8e4; }
-        .period-btn:not(.active):hover { background: #f0f4f2; color: #112920; }
-        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #c8d8d2; border-radius: 10px; }
-      `}</style>
+                @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+                @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+                @keyframes spin { to { transform: rotate(360deg); } }
+
+                .period-btn {
+                    padding: 9px 20px;
+                    border-radius: 9999px;
+                    border: none;
+                    font-family: 'DM Sans', sans-serif;
+                    font-size: 13px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    white-space: nowrap;
+                }
+                .period-btn.active {
+                    background: #112920;
+                    color: white;
+                }
+                .period-btn:not(.active) {
+                    background: white;
+                    color: #7a9a91;
+                    border: 1px solid #e0e8e4;
+                }
+                .period-btn:not(.active):hover {
+                    background: #f0f4f2;
+                    color: #112920;
+                }
+            `}</style>
 
             <SideBar />
 
-            <main style={{ flex: 1, overflowY: "auto" }}>
-                {/* Header */}
-                <header style={{ padding: "16px 32px", background: "white", borderBottom: "1px solid #e8eeec", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 10 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#f5f5f0", borderRadius: 8, padding: "8px 14px", border: "1px solid #e0e8e4", width: 300 }}>
-                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+            <main style={{ flex: 1, overflowY: "auto", width: "100%" }}>
+                {/* Header - Responsive */}
+                <header style={{
+                    padding: "14px 20px",
+                    background: "white",
+                    borderBottom: "1px solid #e8eeec",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 10,
+                    gap: 12
+                }}>
+                    <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        background: "#f5f5f0",
+                        borderRadius: 10,
+                        padding: "10px 14px",
+                        border: "1px solid #e0e8e4",
+                        flex: 1,
+                        maxWidth: 420
+                    }}>
+                        <svg width="15" height="15" viewBox="0 0 20 20" fill="none">
                             <circle cx="9" cy="9" r="7" stroke="#9ca3af" strokeWidth="1.8" />
                             <path d="M14 14l3 3" stroke="#9ca3af" strokeWidth="1.8" strokeLinecap="round" />
                         </svg>
-                        <input placeholder="Search courses, lessons, projects" style={{ background: "none", border: "none", outline: "none", fontSize: 13, color: "#112920", width: "100%" }} />
+                        <input
+                            placeholder="Search courses, lessons, projects"
+                            style={{
+                                background: "none",
+                                border: "none",
+                                outline: "none",
+                                fontSize: 13.5,
+                                color: "#112920",
+                                width: "100%"
+                            }}
+                        />
                     </div>
-                    <div style={{ display: "flex", gap: 16 }}>
-                        <button style={{ background: "none", border: "none", cursor: "pointer", padding: 6 }}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#112920" strokeWidth="1.8" strokeLinecap="round" /><circle cx="12" cy="7" r="4" stroke="#112920" strokeWidth="1.8" /></svg>
+
+                    <div style={{ display: "flex", gap: 12, flexShrink: 0 }}>
+                        <button style={{ background: "none", border: "none", cursor: "pointer", padding: 8 }}>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#112920" strokeWidth="1.8" strokeLinecap="round" />
+                                <circle cx="12" cy="7" r="4" stroke="#112920" strokeWidth="1.8" />
+                            </svg>
                         </button>
-                        <button style={{ background: "none", border: "none", cursor: "pointer", padding: 6 }}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#112920" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        <button style={{ background: "none", border: "none", cursor: "pointer", padding: 8 }}>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#112920" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
                         </button>
                     </div>
                 </header>
 
-                <div style={{ padding: "32px 36px" }}>
-                    {/* Page title */}
+                <div style={{ padding: "24px 20px 40px", maxWidth: "1400px", margin: "0 auto" }}>
+                    {/* Page Title */}
                     <div style={{ marginBottom: 28 }}>
-                        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700, color: "#112920", marginBottom: 4 }}>
+                        <h1 style={{
+                            fontFamily: "'Playfair Display', serif",
+                            fontSize: "clamp(24px, 5vw, 32px)",
+                            fontWeight: 700,
+                            color: "#112920",
+                            marginBottom: 6
+                        }}>
                             Analytics
                         </h1>
-                        <p style={{ color: "#7a9a91", fontSize: 14 }}>
+                        <p style={{ color: "#7a9a91", fontSize: 14.5 }}>
                             {loading ? "Loading your data…" : `Track your progress, ${userName}`}
                         </p>
                     </div>
 
-                    {/* Error */}
+                    {/* Error Message */}
                     {error && (
-                        <div style={{ background: "#fff2f2", border: "1px solid #fcd0cc", borderRadius: 10, padding: "12px 16px", marginBottom: 24, fontSize: 13, color: "#c0392b", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{
+                            background: "#fff2f2",
+                            border: "1px solid #fcd0cc",
+                            borderRadius: 12,
+                            padding: "14px 18px",
+                            marginBottom: 24,
+                            fontSize: 14,
+                            color: "#c0392b",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center"
+                        }}>
                             <span>⚠ {error}</span>
-                            <button onClick={loadMain} style={{ background: "none", border: "none", cursor: "pointer", color: "#e74c3c", fontWeight: 600, fontSize: 13 }}>Retry</button>
+                            <button onClick={loadMain} style={{
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                color: "#e74c3c",
+                                fontWeight: 600,
+                                fontSize: 14
+                            }}>Retry</button>
                         </div>
                     )}
 
-                    {/* ── Stats Cards ── */}
-                    <div style={{ display: "flex", gap: 14, marginBottom: 28 }}>
+                    {/* Stats Cards - Responsive Grid */}
+                    <div style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                        gap: 16,
+                        marginBottom: 32
+                    }}>
                         {loading ? (
                             [1, 2, 3, 4].map((i) => (
-                                <div key={i} style={{ flex: 1, background: "#fff", borderRadius: 14, padding: "20px 22px", border: "1.5px solid #e8eeec" }}>
-                                    <Skeleton h={40} w={40} /><div style={{ marginTop: 14 }}><Skeleton h={28} w={80} /></div>
-                                    <div style={{ marginTop: 8 }}><Skeleton h={13} w="70%" /></div>
+                                <div key={i} style={{
+                                    background: "#fff",
+                                    borderRadius: 14,
+                                    padding: "22px 20px",
+                                    border: "1.5px solid #e8eeec"
+                                }}>
+                                    <Skeleton h={42} w={42} />
+                                    <div style={{ marginTop: 16 }}><Skeleton h={30} w={100} /></div>
+                                    <div style={{ marginTop: 10 }}><Skeleton h={14} w="75%" /></div>
                                 </div>
                             ))
                         ) : (
                             <>
-                                <StatCard
-                                    value={stats?.completedLessons ?? 0}
-                                    label="Lessons completed"
-                                    sub={`↑ This week`}
-                                    icon="📚"
-                                    color="#112920"
-                                />
-                                <StatCard
-                                    value={`${stats?.totalStudyHours ?? 0}h`}
-                                    label="Total study hours"
-                                    sub={`Streak: ${stats?.currentStreak ?? 0} days`}
-                                    icon="⏱️"
-                                    color="#E9BD55"
-                                />
-                                <StatCard
-                                    value={`${stats?.assignmentScoreAvg ?? 0}%`}
-                                    label="Assignment average"
-                                    sub="Across all submissions"
-                                    icon="📝"
-                                    color="#14b8a6"
-                                />
-                                <StatCard
-                                    value={`${stats?.overallGpa ?? 0}%`}
-                                    label="Grade point average"
-                                    sub={`${stats?.completedCourses ?? 0} course(s) completed`}
-                                    icon="🎯"
-                                    color="#f4a261"
-                                />
+                                <StatCard value={stats?.completedLessons ?? 0} label="Lessons completed" sub="↑ This week" icon="📚" color="#112920" />
+                                <StatCard value={`${stats?.totalStudyHours ?? 0}h`} label="Total study hours" sub={`Streak: ${stats?.currentStreak ?? 0} days`} icon="⏱️" color="#E9BD55" />
+                                <StatCard value={`${stats?.assignmentScoreAvg ?? 0}%`} label="Assignment average" sub="Across all submissions" icon="📝" color="#14b8a6" />
+                                <StatCard value={`${stats?.overallGpa ?? 0}%`} label="Grade point average" sub={`${stats?.completedCourses ?? 0} course(s) completed`} icon="🎯" color="#f4a261" />
                             </>
                         )}
                     </div>
 
-                    {/* ── Study Hours Chart + Module Performance ── */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 18, marginBottom: 24 }}>
-
+                    {/* Main Content Grid - Responsive */}
+                    <div style={{
+                        display: "grid",
+                        gridTemplateColumns: "minmax(0, 1.45fr) minmax(0, 1fr)",
+                        gap: 20,
+                        marginBottom: 24
+                    }}>
                         {/* Study Hours Chart */}
-                        <div style={{ background: "#fff", borderRadius: 16, border: "1.5px solid #e8eeec", overflow: "hidden" }}>
-                            <div style={{ padding: "18px 24px", borderBottom: "1px solid #f0f0e8", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{
+                            background: "#fff",
+                            borderRadius: 18,
+                            border: "1.5px solid #e8eeec",
+                            overflow: "hidden"
+                        }}>
+                            <div style={{
+                                padding: "20px 24px",
+                                borderBottom: "1px solid #f0f0e8",
+                                display: "flex",
+                                flexWrap: "wrap",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                gap: 12
+                            }}>
                                 <div>
-                                    <div style={{ fontSize: 15, fontWeight: 700, color: "#112920" }}>Study hours</div>
-                                    <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 2 }}>Track your daily learning time</div>
+                                    <div style={{ fontSize: 16, fontWeight: 700, color: "#112920" }}>Study hours</div>
+                                    <div style={{ fontSize: 13, color: "#9ca3af", marginTop: 3 }}>Track your daily learning time</div>
                                 </div>
-                                <div style={{ display: "flex", gap: 6 }}>
+
+                                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                                     {(["daily", "weekly", "monthly"] as Period[]).map((p) => (
                                         <button
                                             key={p}
@@ -320,10 +478,18 @@ export default function Analytics() {
                                     ))}
                                 </div>
                             </div>
-                            <div style={{ padding: "20px 24px" }}>
+
+                            <div style={{ padding: "28px 24px", minHeight: 280 }}>
                                 {chartLoading ? (
-                                    <div style={{ height: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                        <div style={{ width: 28, height: 28, border: "2.5px solid #d8e8e2", borderTopColor: "#112920", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                                    <div style={{ height: 220, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                        <div style={{
+                                            width: 32,
+                                            height: 32,
+                                            border: "3px solid #d8e8e2",
+                                            borderTopColor: "#112920",
+                                            borderRadius: "50%",
+                                            animation: "spin 0.9s linear infinite"
+                                        }} />
                                     </div>
                                 ) : (
                                     <StudyOvertimeChart data={studyData} />
@@ -332,16 +498,28 @@ export default function Analytics() {
                         </div>
 
                         {/* Module Performance */}
-                        <div style={{ background: "#fff", borderRadius: 16, border: "1.5px solid #e8eeec", overflow: "hidden" }}>
-                            <div style={{ padding: "18px 24px", borderBottom: "1px solid #f0f0e8" }}>
-                                <div style={{ fontSize: 15, fontWeight: 700, color: "#112920" }}>Module performance</div>
-                                <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 2 }}>Progress per module</div>
+                        <div style={{
+                            background: "#fff",
+                            borderRadius: 18,
+                            border: "1.5px solid #e8eeec",
+                            overflow: "hidden",
+                            display: "flex",
+                            flexDirection: "column"
+                        }}>
+                            <div style={{ padding: "20px 24px", borderBottom: "1px solid #f0f0e8" }}>
+                                <div style={{ fontSize: 16, fontWeight: 700, color: "#112920" }}>Module performance</div>
+                                <div style={{ fontSize: 13, color: "#9ca3af", marginTop: 3 }}>Progress per module</div>
                             </div>
-                            <div style={{ padding: "16px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
+                            <div style={{ padding: "20px 24px", flex: 1, display: "flex", flexDirection: "column", gap: 18 }}>
                                 {loading ? (
-                                    [1, 2, 3, 4].map((i) => <div key={i}><Skeleton h={13} w="70%" /><div style={{ marginTop: 8 }}><Skeleton h={6} /></div></div>)
+                                    [1, 2, 3].map((i) => (
+                                        <div key={i}>
+                                            <Skeleton h={15} w="80%" />
+                                            <div style={{ marginTop: 10 }}><Skeleton h={8} /></div>
+                                        </div>
+                                    ))
                                 ) : modulePerf.length === 0 ? (
-                                    <div style={{ padding: "40px 0", textAlign: "center", color: "#9ca3af", fontSize: 14 }}>
+                                    <div style={{ padding: "60px 20px", textAlign: "center", color: "#9ca3af", fontSize: 14.5 }}>
                                         Complete some lessons to see module performance
                                     </div>
                                 ) : (
@@ -350,24 +528,17 @@ export default function Analytics() {
                                         const score = m.avgAssignmentScore;
                                         return (
                                             <div key={i}>
-                                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                                                    <span style={{ fontSize: 13, color: "#374151", fontWeight: 500 }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, alignItems: "center" }}>
+                                                    <span style={{ fontSize: 14, color: "#374151", fontWeight: 500 }}>
                                                         {m.moduleTitle ?? m.title ?? `Module ${i + 1}`}
                                                     </span>
-                                                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                                                        {score != null && (
-                                                            <span style={{ fontSize: 11, color: "#7a9a91" }}>
-                                                                {score}% avg
-                                                            </span>
-                                                        )}
-                                                        <span style={{ fontSize: 12, color: "#9ca3af" }}>{pct}%</span>
+                                                    <div style={{ display: "flex", gap: 10, alignItems: "center", fontSize: 12.5 }}>
+                                                        {score != null && <span style={{ color: "#7a9a91" }}>{score}% avg</span>}
+                                                        <span style={{ color: "#9ca3af", fontWeight: 500 }}>{pct}%</span>
                                                     </div>
                                                 </div>
-                                                <ProgressBar
-                                                    value={pct}
-                                                    color={pct === 100 ? "#14b8a6" : pct >= 50 ? "#E9BD55" : "#112920"}
-                                                />
-                                                <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>
+                                                <ProgressBar value={pct} color={pct === 100 ? "#14b8a6" : pct >= 50 ? "#E9BD55" : "#112920"} />
+                                                <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 6 }}>
                                                     {m.completedLessons ?? 0}/{m.totalLessons ?? 0} lessons
                                                 </div>
                                             </div>
@@ -378,36 +549,45 @@ export default function Analytics() {
                         </div>
                     </div>
 
-                    {/* ── Course Enrollments ── */}
+                    {/* Course Enrollments */}
                     {!loading && enrollments.length > 0 && (
-                        <div style={{ background: "#fff", borderRadius: 16, border: "1.5px solid #e8eeec", overflow: "hidden" }}>
-                            <div style={{ padding: "18px 24px", borderBottom: "1px solid #f0f0e8" }}>
-                                <div style={{ fontSize: 15, fontWeight: 700, color: "#112920" }}>Course progress overview</div>
-                                <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 2 }}>All enrolled courses</div>
+                        <div style={{
+                            background: "#fff",
+                            borderRadius: 18,
+                            border: "1.5px solid #e8eeec",
+                            overflow: "hidden"
+                        }}>
+                            <div style={{ padding: "20px 24px", borderBottom: "1px solid #f0f0e8" }}>
+                                <div style={{ fontSize: 16, fontWeight: 700, color: "#112920" }}>Course progress overview</div>
+                                <div style={{ fontSize: 13, color: "#9ca3af", marginTop: 3 }}>All enrolled courses</div>
                             </div>
-                            <div style={{ padding: "16px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
+                            <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 22 }}>
                                 {enrollments.map((e, i) => (
-                                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                                                <span style={{ fontSize: 14, fontWeight: 500, color: "#112920" }}>
+                                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                                        <div style={{ flex: 1, minWidth: 200 }}>
+                                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
+                                                <span style={{ fontSize: 14.5, fontWeight: 500, color: "#112920" }}>
                                                     {e.courseTitle ?? `Course ${i + 1}`}
                                                 </span>
-                                                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                                                <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                                                     {e.averageGrade != null && (
-                                                        <span style={{ fontSize: 12, color: "#14b8a6", fontWeight: 500 }}>{e.averageGrade}% avg</span>
+                                                        <span style={{ fontSize: 13, color: "#14b8a6", fontWeight: 500 }}>{e.averageGrade}% avg</span>
                                                     )}
-                                                    <span style={{ fontSize: 12, padding: "2px 10px", borderRadius: 20, background: e.status === "COMPLETED" ? "#f0fdf4" : "#fffbeb", color: e.status === "COMPLETED" ? "#15803d" : "#d97706", fontWeight: 600 }}>
+                                                    <span style={{
+                                                        fontSize: 12.5,
+                                                        padding: "4px 14px",
+                                                        borderRadius: 9999,
+                                                        background: e.status === "COMPLETED" ? "#f0fdf4" : "#fffbeb",
+                                                        color: e.status === "COMPLETED" ? "#15803d" : "#d97706",
+                                                        fontWeight: 600
+                                                    }}>
                                                         {e.status === "COMPLETED" ? "Completed" : e.status === "IN_PROGRESS" ? "In progress" : e.status}
                                                     </span>
                                                 </div>
                                             </div>
-                                            <ProgressBar
-                                                value={e.progress}
-                                                color={e.status === "COMPLETED" ? "#14b8a6" : "#112920"}
-                                            />
+                                            <ProgressBar value={e.progress} color={e.status === "COMPLETED" ? "#14b8a6" : "#112920"} />
                                         </div>
-                                        <div style={{ fontSize: 18, fontWeight: 700, color: "#112920", minWidth: 48, textAlign: "right" }}>
+                                        <div style={{ fontSize: 20, fontWeight: 700, color: "#112920", minWidth: 50, textAlign: "right" }}>
                                             {e.progress}%
                                         </div>
                                     </div>
@@ -416,19 +596,30 @@ export default function Analytics() {
                         </div>
                     )}
 
-                    {/* ── Streak Info ── */}
+                    {/* Streak Banner */}
                     {!loading && (stats?.currentStreak ?? 0) > 0 && (
-                        <div style={{ marginTop: 18, background: "linear-gradient(135deg, #112920 0%, #1a4a35 100%)", borderRadius: 16, padding: "24px 28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div style={{
+                            marginTop: 24,
+                            background: "linear-gradient(135deg, #112920 0%, #1a4a35 100%)",
+                            borderRadius: 18,
+                            padding: "28px 32px",
+                            display: "flex",
+                            flexWrap: "wrap",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 20,
+                            color: "white"
+                        }}>
                             <div>
-                                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginBottom: 4 }}>🔥 Current streak</div>
-                                <div style={{ fontSize: 32, fontWeight: 700, color: "#E9BD55" }}>{stats?.currentStreak} days</div>
-                                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>
+                                <div style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", marginBottom: 6 }}>🔥 Current streak</div>
+                                <div style={{ fontSize: 36, fontWeight: 700, color: "#E9BD55" }}>{stats?.currentStreak} days</div>
+                                <div style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", marginTop: 6 }}>
                                     Best: {stats?.longestStreak ?? 0} days
                                 </div>
                             </div>
                             <div style={{ textAlign: "right" }}>
-                                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginBottom: 4 }}>Certificates earned</div>
-                                <div style={{ fontSize: 32, fontWeight: 700, color: "white" }}>{stats?.certificates ?? 0}</div>
+                                <div style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", marginBottom: 6 }}>Certificates earned</div>
+                                <div style={{ fontSize: 36, fontWeight: 700 }}>{stats?.certificates ?? 0}</div>
                             </div>
                         </div>
                     )}
