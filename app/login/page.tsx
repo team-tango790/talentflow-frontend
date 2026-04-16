@@ -250,8 +250,8 @@ export default function Login() {
                 Don&apos;t have an account?{" "}
                 <Link href="/register" style={{ color: "#E9BD55", fontWeight: 500, textDecoration: "none" }}>Sign up</Link>
               </p>
-              <div className="divider"><div className="divider-line" /><span className="divider-text">or continue with</span><div className="divider-line" /></div>
-              <button type="button" className="btn-google" onClick={handleGoogleLogin} disabled={loading || googleLoading} aria-label="Continue with Google">
+              {/* <div className="divider"><div className="divider-line" /><span className="divider-text">or continue with</span><div className="divider-line" /></div> */}
+              {/* <button type="button" className="btn-google" onClick={handleGoogleLogin} disabled={loading || googleLoading} aria-label="Continue with Google">
                 {googleLoading ? (
                   <><span className="spinner" />Connecting…</>
                 ) : (
@@ -265,7 +265,7 @@ export default function Login() {
                     Continue with Google
                   </>
                 )}
-              </button>
+              </button> */}
             </div>
           </form>
         </div>

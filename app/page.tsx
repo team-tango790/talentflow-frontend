@@ -1,5 +1,6 @@
 import Header from "@/components/header";
 import { ArrowRight, Zap, TrendingUp, CheckSquare } from "lucide-react";
+import Link from "next/link";
 // import { Twitter } from 'lucide-react';
 
 const courses = [
@@ -102,19 +103,20 @@ export default function LandingPage() {
         </p>
 
         <div className="mt-10 md:mt-12 flex flex-col sm:flex-row gap-3 md:gap-4 items-center w-full max-w-sm sm:max-w-none sm:w-auto">
+          <Link href="/login">
           <button className="flex items-center gap-2 bg-[#1E4A39] hover:bg-[#3a5c3a] text-white font-semibold px-6 py-3.5 rounded-xl transition-colors duration-200 w-full sm:w-auto justify-center text-sm md:text-base">
             Start learning
             <ArrowRight size={18} />
-          </button>
-
+          </button></Link>
+          <Link href="/login">
           <button className="flex items-center gap-2 bg-[#E9BD55] hover:bg-[#d4911a] text-[#1a1a1a] font-semibold px-6 py-3.5 rounded-xl transition-colors duration-200 w-full sm:w-auto justify-center text-sm md:text-base">
             <Zap size={18} />
             View courses
-          </button>
-
+          </button></Link>
+          <Link href="/login">
           <button className="flex items-center gap-2 border border-[#1F8A8A] hover:border-[#6a8a6a] text-white font-semibold px-6 py-3.5 rounded-xl transition-colors duration-200 w-full sm:w-auto justify-center bg-transparent text-sm md:text-base">
             See how it works
-          </button>
+          </button></Link>
         </div>
       </section>
 
@@ -169,7 +171,7 @@ export default function LandingPage() {
       </section>
 
       {/* Courses Ticker Nav */}
-      <nav className="w-full min-h-12 bg-[#1E4A39] overflow-x-auto flex items-center text-sm text-[#D1D5DB] px-4 md:px-6">
+      <nav className="w-full min-h-12 bg-[#1E4A39] overflow-hidden flex items-center text-sm text-[#D1D5DB] px-4 md:px-6">
         <div className="flex items-center gap-0 whitespace-nowrap min-w-max mx-auto">
           {courses.map((course, index) => (
             <p key={index} className="flex items-center gap-1.5 py-3">
@@ -544,12 +546,14 @@ export default function LandingPage() {
               Trueminds Innovations internship cohort.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mt-8 md:mt-10">
+              <Link href="/login">
               <button className="bg-[#E9BD55] hover:bg-[#E8B943] text-black font-medium px-6 md:px-8 py-3.5 rounded-2xl transition-colors text-sm md:text-base w-full sm:w-auto">
                 Apply for the cohort
-              </button>
+              </button></Link>
+              <Link href="/login">
               <button className="bg-[#112920] hover:bg-[#254A3F] border border-gray-600 font-medium px-6 md:px-8 py-3.5 rounded-2xl transition-colors text-sm md:text-base w-full sm:w-auto">
                 Learn more about Trueminds
-              </button>
+              </button></Link>
             </div>
           </div>
         </div>
