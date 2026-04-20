@@ -1,6 +1,6 @@
-// app/dashboard/page.tsx
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import SideBar from "@/components/sidebar";
 import { getDashboard, getStudyOvertime, BASE_URL, getHeaders, safeJson } from "@/lib/api";
 
@@ -171,9 +171,9 @@ const DotLabel = ({ color, children }: { color: string; children: React.ReactNod
 );
 
 const StatCard = ({ number, label, sublabel, sublabelColor, icon }: { number: string | number; label: string; sublabel?: string; sublabelColor?: string; icon: React.ReactNode }) => (
-  <div style={{ flex: 1, background: "#fff", border: "1.5px solid #2dd4bf", borderRadius: 12, padding: "18px 20px", display: "flex", flexDirection: "column", gap: 6 }}>
+  <div className="stat-card" style={{ background: "#fff", border: "1.5px solid #2dd4bf", borderRadius: 12, padding: "18px 20px", display: "flex", flexDirection: "column", gap: 6 }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-      <span style={{ fontSize: 30, fontWeight: 700, color: "#111", lineHeight: 1 }}>{number}</span>
+      <span style={{ fontSize: 28, fontWeight: 700, color: "#111", lineHeight: 1 }}>{number}</span>
       <span style={{ borderRadius: 8, padding: "7px 9px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{icon}</span>
     </div>
     <div style={{ fontSize: 13, color: "#6b7280", fontWeight: 500 }}>{label}</div>
@@ -194,8 +194,8 @@ const StudyChart = ({ activityData }: { activityData: ActivityDay[] }) => {
   const lineVals = activityData.map((d) => d.hoursSpent ?? d.hours ?? 0);
   const barMax = Math.max(...bars, 60);
   const lineMax = Math.max(...lineVals, 6);
-  const W = 520; const H = 240;
-  const padL = 40; const padR = 40; const padT = 16; const padB = 36;
+  const W = 520; const H = 220;
+  const padL = 36; const padR = 36; const padT = 16; const padB = 32;
   const chartW = W - padL - padR; const chartH = H - padT - padB;
   const barW = chartW / days.length; const barGap = 18;
   const getBx = (i: number) => padL + i * barW + barGap / 2;
@@ -242,7 +242,7 @@ const Skeleton = ({ h = 16, w = "100%", radius = 6 }: { h?: number; w?: number |
 );
 
 /* ════════════════════════════════════
-   MEETINGS / LIVE SESSIONS SECTION
+   LIVE SESSIONS PANEL
 ════════════════════════════════════ */
 function LiveSessionsPanel({ sessions, loading, onRsvpChange }: {
   sessions: LiveSession[];
@@ -307,54 +307,40 @@ function LiveSessionsPanel({ sessions, loading, onRsvpChange }: {
             padding: "14px 20px",
             borderBottom: i < sessions.length - 1 ? "1.5px solid #14b8a6" : "none",
             background: isToday ? "#f8fffb" : "transparent",
+            gap: 10,
           }}>
-            {/* Color bar */}
-            <div style={{ width: 4, minHeight: 44, background: barColor, borderRadius: 4, marginRight: 14, flexShrink: 0, alignSelf: "stretch" }} />
-
+            <div style={{ width: 4, minHeight: 44, background: barColor, borderRadius: 4, marginRight: 6, flexShrink: 0, alignSelf: "stretch" }} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              {/* Platform icon + title */}
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 13 }}>{getPlatformIcon(session.platform)}</span>
                 <span style={{ fontSize: 13, fontWeight: 600, color: "#1f2937", lineHeight: 1.3 }}>{session.title}</span>
               </div>
-
-              {/* Mentor */}
               {session.mentor && (
                 <p style={{ fontSize: 11, color: "#9ca3af", marginBottom: 5 }}>
                   with {session.mentor.name} · {session.duration} min
                 </p>
               )}
-
-              {/* Badge */}
-              <span style={{
-                display: "inline-block",
-                background: badgeBg, color: badgeColor,
-                fontSize: 10, padding: "2px 10px", borderRadius: 20, fontWeight: 700,
-              }}>
-                {badge === "Today" ? `🔴 ${label}` : label}
-              </span>
-
-              {/* RSVP'd badge */}
-              {session.userHasRsvp && (
-                <span style={{ display: "inline-block", marginLeft: 6, background: "#eff6ff", color: "#2563eb", fontSize: 10, padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>
-                  ✓ RSVP'd
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                <span style={{ display: "inline-block", background: badgeBg, color: badgeColor, fontSize: 10, padding: "2px 10px", borderRadius: 20, fontWeight: 700 }}>
+                  {badge === "Today" ? `🔴 ${label}` : label}
                 </span>
-              )}
+                {session.userHasRsvp && (
+                  <span style={{ display: "inline-block", background: "#eff6ff", color: "#2563eb", fontSize: 10, padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>
+                    ✓ RSVP&apos;d
+                  </span>
+                )}
+              </div>
             </div>
-
-            {/* Actions */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 5, flexShrink: 0, marginLeft: 10 }}>
-              {/* Join — today with URL */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 5, flexShrink: 0 }}>
               {isToday && session.platformUrl && (
                 <a href={session.platformUrl} target="_blank" rel="noreferrer"
-                  style={{ fontSize: 11, fontWeight: 700, padding: "5px 12px", borderRadius: 7, background: "#112920", color: "white", textDecoration: "none", whiteSpace: "nowrap" }}>
+                  style={{ fontSize: 11, fontWeight: 700, padding: "5px 10px", borderRadius: 7, background: "#112920", color: "white", textDecoration: "none", whiteSpace: "nowrap" }}>
                   Join now
                 </a>
               )}
-              {/* RSVP */}
               <button onClick={() => handleRsvp(session)} disabled={isLoading}
                 style={{
-                  fontSize: 11, fontWeight: 600, padding: "5px 12px", borderRadius: 7,
+                  fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 7,
                   border: `1.5px solid ${session.userHasRsvp ? "#fca5a5" : "#2dd4bf"}`,
                   background: session.userHasRsvp ? "#fef2f2" : "transparent",
                   color: session.userHasRsvp ? "#dc2626" : "#0f766e",
@@ -378,6 +364,7 @@ function LiveSessionsPanel({ sessions, loading, onRsvpChange }: {
    MAIN DASHBOARD
 ════════════════════════════════════ */
 export default function Dashboard() {
+  const router = useRouter();
   const [dashData, setDashData] = useState<DashboardData | null>(null);
   const [messages] = useState<Message[]>(FALLBACK_MESSAGES);
   const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
@@ -387,11 +374,9 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // ── Fetch live sessions for the intern's enrolled course ──
   const loadLiveSessions = useCallback(async (courseId: string) => {
     setSessionsLoading(true);
     try {
-      // Get course overview which may include session IDs
       const res = await fetch(`${BASE_URL}/api/courses/${courseId}/overview`, { headers: getHeaders() });
       if (!res.ok) { setSessionsLoading(false); return; }
       const json = await res.json();
@@ -409,9 +394,9 @@ export default function Dashboard() {
       const sessions: LiveSession[] = results
         .filter((r): r is PromiseFulfilledResult<LiveSession> => r.status === "fulfilled" && !!r.value?.id)
         .map(r => r.value)
-        .filter(s => new Date(s.scheduledAt) > new Date()) // upcoming only on dashboard
+        .filter(s => new Date(s.scheduledAt) > new Date())
         .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime())
-        .slice(0, 4); // show max 4 on dashboard
+        .slice(0, 4);
 
       setLiveSessions(sessions);
     } catch {
@@ -425,7 +410,6 @@ export default function Dashboard() {
     setLoading(true);
     const errs: Record<string, string> = {};
 
-    // ── 1. Dashboard (stats + user + enrollment) ──
     try {
       const res = await getDashboard();
       const data = res?.data ?? res ?? {};
@@ -439,13 +423,9 @@ export default function Dashboard() {
         setCourseProgress(FALLBACK_MODULES);
       }
 
-      // Kick off live sessions fetch once we know the courseId
       const courseId = data?.activeEnrollment?.courseId ?? data?.activeEnrollment?.course?.id;
-      if (courseId) {
-        loadLiveSessions(courseId);
-      } else {
-        setSessionsLoading(false);
-      }
+      if (courseId) loadLiveSessions(courseId);
+      else setSessionsLoading(false);
     } catch (e: unknown) {
       errs.dashboard = e instanceof Error ? e.message : "Dashboard error";
       setDashData({});
@@ -453,7 +433,6 @@ export default function Dashboard() {
       setSessionsLoading(false);
     }
 
-    // ── 2. Study activity chart ──
     try {
       const res = await getStudyOvertime("weekly");
       const days = res?.data ?? res ?? [];
@@ -481,28 +460,28 @@ export default function Dashboard() {
   const studyHours = stats?.totalStudyHours ?? stats?.totalStudyTimeHours ?? 0;
   const cohortLevel = stats?.currentStage ?? stats?.cohortLevel ?? 1;
 
-  /* ── Skeleton screen ── */
+  /* ── Skeleton ── */
   if (loading) {
     return (
-      <div style={{ display: "flex", minHeight: "100vh", background: "#f0f0e8", fontFamily: "'DM Sans', sans-serif" }}>
+      <div className="dash-root">
         <style>{globalStyles}</style>
         <SideBar />
-        <main style={{ flex: 1, overflowY: "auto", padding: "24px 28px" }}>
+        <main className="dash-main" style={{ flex: 1, overflowY: "auto", padding: "24px 20px" }}>
           <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: "1px solid #e2e2d8" }}>
             <Skeleton h={20} w={220} /><div style={{ marginTop: 8 }}><Skeleton h={13} w={320} /></div>
           </div>
-          <div style={{ display: "flex", gap: 14, marginBottom: 24 }}>
+          <div className="stat-grid" style={{ marginBottom: 24 }}>
             {[1, 2, 3, 4].map(i => (
-              <div key={i} style={{ flex: 1, background: "#fff", border: "1.5px solid #2dd4bf", borderRadius: 12, padding: "18px 20px" }}>
+              <div key={i} style={{ background: "#fff", border: "1.5px solid #2dd4bf", borderRadius: 12, padding: "18px 20px" }}>
                 <Skeleton h={30} w={80} /><div style={{ marginTop: 10 }}><Skeleton h={13} w="80%" /></div>
                 <div style={{ marginTop: 6 }}><Skeleton h={11} w="60%" /></div>
               </div>
             ))}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 18, marginBottom: 20 }}>
+          <div className="mid-grid" style={{ marginBottom: 20 }}>
             {[1, 2].map(i => <div key={i} style={{ height: 380, background: "#fff", border: "1.5px solid #2dd4bf", borderRadius: 14 }} className="skeleton-block" />)}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+          <div className="bot-grid">
             {[1, 2].map(i => <div key={i} style={{ height: 360, background: "#fff", border: "1.5px solid #2dd4bf", borderRadius: 14 }} className="skeleton-block" />)}
           </div>
         </main>
@@ -511,18 +490,18 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#f0f0e8", fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="dash-root">
       <style>{globalStyles}</style>
       <SideBar />
 
-      <main style={{ flex: 1, overflowY: "auto" }}>
+      <main className="dash-main">
         {/* ── Top Nav ── */}
-        <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 28px", background: "#f0f0e8", borderBottom: "1px solid #e2e2d8", position: "sticky", top: 0, zIndex: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fff", border: "1px solid #2dd4bf", borderRadius: 20, padding: "8px 16px", width: 280 }}>
+        <header className="dash-header">
+          <div className="search-bar">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2">
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
             </svg>
-            <input placeholder="Search courses, lessons, projects" style={{ border: "none", background: "transparent", outline: "none", fontSize: 13, color: "#6b7280", width: "100%" }} />
+            <input placeholder="Search courses, lessons, projects" className="search-input" />
           </div>
           <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
             <button style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#6b7280" }}>
@@ -534,7 +513,7 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <div style={{ padding: "26px 28px" }}>
+        <div className="dash-content">
           {/* Error banner */}
           {Object.keys(errors).length > 0 && (
             <div style={{ background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 8, padding: "8px 16px", marginBottom: 18, fontSize: 12, color: "#92400e", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -545,12 +524,12 @@ export default function Dashboard() {
 
           {/* Welcome */}
           <div style={{ marginBottom: 22 }}>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>Welcome back, {userName}</h1>
+            <h1 style={{ fontSize: "clamp(18px, 3vw, 22px)", fontWeight: 700, color: "#1a1a1a", margin: 0 }}>Welcome back, {userName}</h1>
             <p style={{ color: "#9ca3af", fontSize: 13, margin: "4px 0 0" }}>Here&apos;s what&apos;s happening with your learning journey today</p>
           </div>
 
           {/* ── Stat Cards ── */}
-          <div style={{ display: "flex", gap: 14, marginBottom: 24 }}>
+          <div className="stat-grid" style={{ marginBottom: 24 }}>
             <StatCard number={`${gpa}%`} label="Grade Point Average" sublabel="↑ +5% this week" sublabelColor="#f4a261" icon={<div style={{ background: "#fef3e2", borderRadius: 8, padding: "7px 8px" }}><BookIcon color="#f4a261" /></div>} />
             <StatCard number={completedModules} label="Completed Modules" sublabel="↑ 2 this month" sublabelColor="#ee380a" icon={<div style={{ background: "#fde8e8", borderRadius: 8, padding: "7px 8px" }}><FolderIcon color="#ee380a" /></div>} />
             <StatCard number={`${studyHours}hrs`} label="Total Study Time" sublabel="↑ 2 this month" sublabelColor="#008080" icon={<div style={{ background: "#e0f2f2", borderRadius: 8, padding: "7px 8px" }}><ClockIcon color="#008080" /></div>} />
@@ -558,7 +537,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Middle Row: Enrollment + Chart ── */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.25fr", gap: 18, marginBottom: 20 }}>
+          <div className="mid-grid" style={{ marginBottom: 20 }}>
             {/* Currently Enrolled */}
             <div style={{ border: "1.5px solid #2dd4bf", borderRadius: 14, overflow: "hidden" }}>
               <div style={{ background: "#1a3328", padding: "20px 22px" }}>
@@ -566,7 +545,7 @@ export default function Dashboard() {
                   Currently enrolled
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E1AD01" strokeWidth="2.5"><path d="M7 17L17 7M7 7h10v10" /></svg>
                 </div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 4 }}>
+                <div style={{ fontSize: "clamp(16px, 2.5vw, 20px)", fontWeight: 700, color: "#fff", marginBottom: 4 }}>
                   {enrollment?.course?.title ?? "No active enrollment"}
                 </div>
                 <div style={{ fontSize: 12, color: "#E1AD01" }}>
@@ -579,12 +558,12 @@ export default function Dashboard() {
                 </div>
               </div>
               <div style={{ padding: "18px 22px", background: "#fff" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 14, color: "#1a1a1a" }}>Course progress</div>
                     <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{completedModules} modules completed</div>
                   </div>
-                  <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#f0f0e8", border: "1px solid #2dd4bf", borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer", color: "#111" }}>
+                  <button onClick={() => router.push("/courses")} style={{ display: "flex", alignItems: "center", gap: 6, background: "#f0f0e8", border: "1px solid #2dd4bf", borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer", color: "#111", whiteSpace: "nowrap" }}>
                     View all <ArrowRight />
                   </button>
                 </div>
@@ -597,7 +576,7 @@ export default function Dashboard() {
                     <div key={i} style={{ marginBottom: 13 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
                         <span style={{ fontSize: 12, color: "#374151", fontWeight: 500 }}>{m.moduleTitle ?? m.title}</span>
-                        <span style={{ fontSize: 12, color: "#9ca3af" }}>{pct}%</span>
+                        <span style={{ fontSize: 12, color: "#9ca3af", flexShrink: 0, marginLeft: 8 }}>{pct}%</span>
                       </div>
                       <ProgressBar value={pct} color="#e3b448" />
                     </div>
@@ -611,15 +590,15 @@ export default function Dashboard() {
               <div style={{ padding: "18px 24px", borderBottom: "1.5px solid #14b8a6", display: "flex", alignItems: "center", gap: 10 }}>
                 <DotLabel color="#0c5239">Study activity</DotLabel>
               </div>
-              <div style={{ padding: "24px 20px 16px" }}>
+              <div style={{ padding: "24px 16px 16px" }}>
                 <StudyChart activityData={activityData} />
-                <div style={{ display: "flex", justifyContent: "center", gap: 28, marginTop: 20 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#4b5563" }}>
-                    <span style={{ width: 32, height: 14, borderRadius: 3, background: "#b7e4d0", display: "inline-block" }} />
+                <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20, flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#4b5563" }}>
+                    <span style={{ width: 28, height: 12, borderRadius: 3, background: "#b7e4d0", display: "inline-block" }} />
                     Module completed
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#4b5563" }}>
-                    <span style={{ width: 32, height: 14, borderRadius: 3, background: "#e9b036", display: "inline-block" }} />
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "#4b5563" }}>
+                    <span style={{ width: 28, height: 12, borderRadius: 3, background: "#e9b036", display: "inline-block" }} />
                     Time spent
                   </div>
                 </div>
@@ -628,25 +607,24 @@ export default function Dashboard() {
           </div>
 
           {/* ── Bottom Row: Messages + Live Sessions ── */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
-
+          <div className="bot-grid">
             {/* New Messages */}
             <div style={{ border: "1.5px solid #14b8a6", borderRadius: 14, overflow: "hidden", background: "#fcfaf2" }}>
               <div style={{ padding: "16px 20px", borderBottom: "1.5px solid #14b8a6", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <DotLabel color="#0c8577">New messages</DotLabel>
-                <ViewAllBtn />
+                <ViewAllBtn onClick={() => router.push("/discussions")} />
               </div>
               {messages.map((m, i) => (
-                <div key={i} style={{ padding: "16px 20px", borderBottom: i < messages.length - 1 ? "1.5px solid #14b8a6" : "none", background: "#fcfaf2" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                <div key={i} style={{ padding: "14px 20px", borderBottom: i < messages.length - 1 ? "1.5px solid #14b8a6" : "none", background: "#fcfaf2" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6, gap: 8 }}>
                     <span style={{ fontSize: 14, fontWeight: 700, color: "#374151" }}>{m.sender}</span>
-                    <span style={{ fontSize: 10, color: "#6b7280", whiteSpace: "nowrap" }}>Today {m.time}</span>
+                    <span style={{ fontSize: 10, color: "#6b7280", whiteSpace: "nowrap", flexShrink: 0 }}>Today {m.time}</span>
                   </div>
                   <div style={{ fontSize: 12, color: "#4b5563", lineHeight: 1.55, marginBottom: 12 }}>{m.text}</div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ display: "flex" }}>
                       {["TT", "JD", "AB"].map((init, ai) => (
-                        <Avatar key={ai} initials={init} bg={ai === 0 ? "#d1fae5" : ai === 1 ? "#dbeafe" : "#fde8d8"} color={ai === 0 ? "#065f46" : ai === 1 ? "#1e40af" : "#92400e"} size={28} />
+                        <Avatar key={ai} initials={init} bg={ai === 0 ? "#d1fae5" : ai === 1 ? "#dbeafe" : "#fde8d8"} color={ai === 0 ? "#065f46" : ai === 1 ? "#1e40af" : "#92400e"} size={26} />
                       ))}
                     </div>
                     <div style={{ width: 19, height: 19, borderRadius: "50%", background: "#eab308", color: "#fff", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -657,7 +635,7 @@ export default function Dashboard() {
               ))}
             </div>
 
-            {/* ── Upcoming Live Sessions (replaces static meetings) ── */}
+            {/* Upcoming Live Sessions */}
             <div style={{ border: "1.5px solid #14b8a6", borderRadius: 14, overflow: "hidden", background: "#fcfaf2" }}>
               <div style={{ padding: "16px 20px", borderBottom: "1.5px solid #14b8a6", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <DotLabel color="#e74c3c">Upcoming sessions</DotLabel>
@@ -667,16 +645,11 @@ export default function Dashboard() {
                       {liveSessions.length} live
                     </span>
                   )}
-                  <ViewAllBtn />
+                  <ViewAllBtn onClick={() => router.push("/courses")} />
                 </div>
               </div>
-              <LiveSessionsPanel
-                sessions={liveSessions}
-                loading={sessionsLoading}
-                onRsvpChange={handleRsvpChange}
-              />
+              <LiveSessionsPanel sessions={liveSessions} loading={sessionsLoading} onRsvpChange={handleRsvpChange} />
             </div>
-
           </div>
         </div>
       </main>
@@ -686,15 +659,73 @@ export default function Dashboard() {
 
 const globalStyles = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Layout */
+  .dash-root { display: flex; min-height: 100vh; background: #f0f0e8; font-family: 'DM Sans', sans-serif; }
+  .dash-main { flex: 1; overflow-y: auto; min-width: 0; display: flex; flex-direction: column; }
+  .dash-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px; background: #f0f0e8; border-bottom: 1px solid #e2e2d8;
+    position: sticky; top: 0; z-index: 10; gap: 12px;
+  }
+  .dash-content { padding: 20px 20px 32px; }
+
+  /* Search */
+  .search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid #2dd4bf; border-radius: 20px;
+    padding: 8px 16px; flex: 1; max-width: 320px; min-width: 0;
+  }
+  .search-input { border: none; background: transparent; outline: none; font-size: 13px; color: #6b7280; width: 100%; min-width: 0; font-family: 'DM Sans', sans-serif; }
+  .search-input::placeholder { color: #9ca3af; }
+
+  /* Stat cards — 2 col on mobile, 4 on desktop */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .stat-card { min-width: 0; }
+
+  /* Middle row — single col on mobile, 2 col on desktop */
+  .mid-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  /* Bottom row — single col on mobile, 2 col on desktop */
+  .bot-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  @media (min-width: 900px) {
+    .dash-content { padding: 26px 28px 36px; }
+    .dash-header { padding: 14px 28px; }
+    .stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .mid-grid { grid-template-columns: 1fr 1.25fr; }
+    .bot-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .search-bar { max-width: 100%; }
+    .dash-header { flex-wrap: wrap; }
+  }
+
+  /* Animations */
   @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
   @keyframes spin { to { transform: rotate(360deg); } }
+
   .skeleton-block {
     background: linear-gradient(90deg, #eeeee6 25%, #e4e4dc 50%, #eeeee6 75%) !important;
     background-size: 800px 100% !important;
     animation: shimmer 1.4s infinite linear;
   }
-  input::placeholder { color: #9ca3af; }
+
+  /* Scrollbar */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #c8d8d2; border-radius: 10px; }
